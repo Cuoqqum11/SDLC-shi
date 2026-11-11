@@ -1,15 +1,14 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "milk_products";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
+// Local XAMPP defaults. Override with environment variables when deploying.
+$conn = new mysqli(
+    getenv('FOOD_DB_HOST') ?: 'localhost',
+    getenv('FOOD_DB_USER') ?: 'root',
+    getenv('FOOD_DB_PASSWORD') ?: '',
+    getenv('FOOD_DB_NAME') ?: 'food_products'
+);
 if ($conn->connect_error) {
-    die("Kết nối thất bại: " . $conn->connect_error);
+    http_response_code(500);
+    exit('Database connection failed. Check the XAMPP setup instructions.');
 }
-
-// Thiết lập mã hóa tiếng Việt (nếu cần)
-$conn->set_charset("utf8mb4");
-?>
+$conn->set_charset('utf8mb4');
+require_once __DIR__ . '/app.php';

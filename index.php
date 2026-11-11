@@ -1,99 +1,10 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
-}
-$username = $_SESSION['username'] ?? 'User';
-$role = $_SESSION['role'] ?? 'Customer';
-?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang chủ - Quản lý Cửa hàng Sữa</title>
-    <link rel="stylesheet" href="style(index).css">
-    <!-- FontAwesome để lấy icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-
-    <!-- SIDEBAR BÊN TRÁI -->
-    <div class="sidebar">
-        <div class="logo-area">
-            <h2>MILK STORE</h2>
-            <span>Hệ thống Quản lý Sữa</span>
-        </div>
-
-        <ul class="menu-list">
-            <li class="menu-category">Menu Chính</li>
-            <li><a href="index.php" class="active"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
-            
-            <li class="menu-category">Quản lý Sản phẩm</li>
-            <li><a href="#"><i class="fa-solid fa-box"></i> Danh sách sản phẩm</a></li>
-            <li><a href="#"><i class="fa-solid fa-tags"></i> Loại sữa / Danh mục</a></li>
-            
-            <?php if ($role === 'Admin'): ?>
-            <li class="menu-category">Quản trị hệ thống</li>
-            <li><a href="#"><i class="fa-solid fa-users-gear"></i> Quản lý tài khoản</a></li>
-            <li><a href="#"><i class="fa-solid fa-chart-line"></i> Thống kê doanh thu</a></li>
-            <?php endif; ?>
-
-            <li class="menu-category">Hệ thống</li>
-            <li><a href="logout.php" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
-        </ul>
-    </div>
-
-    <!-- NỘI DUNG CHÍNH BÊN PHẢI -->
-    <div class="main-content">
-        <!-- Thanh top bar -->
-        <div class="topbar">
-            <span>Trang chủ</span>
-            <div class="user-info">
-                <i class="fa-regular fa-bell" style="cursor: pointer; font-size: 18px;"></i>
-                <div class="avatar-badge">
-                    <i class="fa-solid fa-user"></i>
-                    <span><?= htmlspecialchars($username) ?> (<?= htmlspecialchars($role) ?>)</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Khung chào mừng & thông báo -->
-        <div class="dashboard-container">
-            <div class="welcome-box">
-                <h1>Xin chào, <br><span class="highlight-name"><?= htmlspecialchars($username) ?></span></h1>
-                
-                <div class="notifications-section">
-                    <h3><i class="fa-solid fa-bullhorn"></i> Thông báo mới nhất từ cửa hàng</h3>
-                    
-                    <div class="notif-item">
-                        <span class="notif-date">11/11/2026 08:30</span>
-                        <p><strong>[CHƯƠNG TRÌNH KHUYẾN MÃI]</strong> Giảm giá 20% cho tất cả các dòng sữa tươi nguyên chất trong tuần lễ tri ân khách hàng.</p>
-                    </div>
-
-                    <div class="notif-item">
-                        <span class="notif-date">05/11/2026 14:15</span>
-                        <p><strong>[THÔNG BÁO NHẬP HÀNG]</strong> Đã cập nhật lô hàng sữa bột dinh dưỡng mới về kho, khách hàng có thể đặt mua ngay.</p>
-                    </div>
-
-                    <div class="notif-item">
-                        <span class="notif-date">01/11/2026 09:00</span>
-                        <p><strong>[HỆ THỐNG]</strong> Cập nhật giao diện quản lý kho và danh mục sản phẩm nhằm tối ưu trải nghiệm người dùng.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Khung ảnh minh họa bên phải -->
-            <div class="illustration-box">
-                <div class="store-banner-card">
-                    <i class="fa-solid fa-glass-water"></i>
-                    <h2>Milk Products Management</h2>
-                    <p>Quản lý sản phẩm, tồn kho và phân quyền người dùng nhanh chóng, tiện lợi.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</body>
-</html>
+require 'db.php';
+$cart=$_SESSION['cart']??[];
+if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['add'])){check_csrf();$id=(int)$_POST['item_id'];$q=max(1,min(20,(int)($_POST['quantity']??1)));$s=$conn->prepare('SELECT m.id,m.restaurant_id,m.stock,r.is_open FROM menu_items m JOIN restaurants r ON r.id=m.restaurant_id WHERE m.id=? AND m.is_available=1');$s->bind_param('i',$id);$s->execute();$item=$s->get_result()->fetch_assoc();if($item&&$item['is_open']&&$item['stock']>0){$old=$_SESSION['cart'];if($old&&isset($old[$id])&&$old[$id]['restaurant_id']!==(int)$item['restaurant_id']){flash('Your cart can contain items from one restaurant at a time.');}else{$_SESSION['cart'][$id]=['quantity'=>min((int)$item['stock'],($old[$id]['quantity']??0)+$q),'restaurant_id'=>(int)$item['restaurant_id']];flash('Added to your cart.');}}else flash('This item is currently unavailable.');header('Location: index.php');exit;}
+$q=trim($_GET['q']??'');$cat=(int)($_GET['category']??0);$sql='SELECT m.*,r.name restaurant,r.cuisine,r.is_open,c.name category FROM menu_items m JOIN restaurants r ON r.id=m.restaurant_id LEFT JOIN categories c ON c.id=m.category_id WHERE m.is_available=1 AND m.stock>0 AND r.is_open=1';$params=[];$types='';if($q!==''){$sql.=' AND (m.name LIKE ? OR r.name LIKE ? OR r.cuisine LIKE ?)';$like='%'.$q.'%';$params=[$like,$like,$like];$types='sss';}if($cat){$sql.=' AND m.category_id=?';$params[]=$cat;$types.='i';}$sql.=' ORDER BY r.rating DESC,m.id DESC';$s=$conn->prepare($sql);if($params)$s->bind_param($types,...$params);$s->execute();$items=$s->get_result();$categories=$conn->query('SELECT * FROM categories ORDER BY name');
+page_start('Discover food');$msg=take_flash();if($msg)echo '<p class="pill">'.h($msg).'</p>'; ?>
+<section class="hero"><span class="pill">GOOD FOOD, DELIVERED</span><h1>What are you craving today?</h1><p class="muted">Discover local restaurants, browse the menu, and track your order from kitchen to door.</p><form method="get" style="display:flex;gap:8px;max-width:700px"><input class="field" style="margin:0" name="q" value="<?=h($q)?>" placeholder="Search dishes or restaurants"><button>Search</button></form></section>
+<div class="row"><h2>Explore by category</h2><a class="btn secondary" href="orders.php">Cart (<?=array_sum(array_column($cart,'quantity'))?>)</a></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 26px"><a class="pill" href="index.php">All</a><?php while($c=$categories->fetch_assoc()):?><a class="pill" href="?category=<?=$c['id']?>"><?=h($c['name'])?></a><?php endwhile;?></div>
+<h2>Popular near you</h2><div class="grid"><?php if(!$items->num_rows):?><p>No available dishes match your search yet.</p><?php endif;while($m=$items->fetch_assoc()):?><article class="card"><?php if($m['image_url']):?><img src="<?=h($m['image_url'])?>" alt="<?=h($m['name'])?>" loading="lazy"><?php endif;?><p><span class="pill"><?=h($m['category']??$m['cuisine'])?></span></p><div class="row"><h3><?=h($m['name'])?></h3><strong><?=number_format($m['price'],0)?> ₫</strong></div><p class="muted"><?=h($m['restaurant'])?> · <?=h($m['cuisine'])?></p><p><?=h($m['description'])?></p><form method="post"><?php csrf_field();?><input type="hidden" name="item_id" value="<?=$m['id']?>"><button name="add">Add to cart</button></form></article><?php endwhile;?></div>
+<?php page_end();
