@@ -1,0 +1,154 @@
+/* Thiết lập chung cho toàn trang */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Khung chứa form (Container chính) */
+.form-container {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+/* Tiêu đề form */
+.form-container h2 {
+  text-align: center;
+  color: #222222;
+  margin-top: 0;
+  margin-bottom: 28px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* Nhãn (Label) */
+label {
+  display: block;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Các trường nhập liệu (Input) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+/* Hiệu ứng khi focus vào ô input */
+input:focus {
+  border-color: #007BFF;
+  background-color: #ffffff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* Phần chữ nhỏ hướng dẫn (ví dụ: yêu cầu mật khẩu) */
+small {
+  display: block;
+  color: #666666;
+  font-size: 12px;
+  margin-top: -12px;
+  margin-bottom: 18px;
+}
+
+/* Nút bấm (Button) */
+button[type="submit"],
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+  margin-top: 5px;
+}
+
+/* Hiệu ứng hover cho nút bấm */
+button[type="submit"]:hover,
+.btn:hover {
+  background: #0056b3;
+}
+
+button[type="submit"]:active {
+  transform: scale(0.98);
+}
+
+/* Đoạn văn bản chuyển hướng (Đăng nhập / Đăng ký) */
+.form-container p {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 14px;
+  color: #666666;
+}
+
+.form-container p a {
+  color: #007BFF;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.form-container p a:hover {
+  text-decoration: underline;
+}
+
+/* Giao diện cho trang quản lý vai trò (manage_roles.php) nếu có */
+.container {
+  display: flex;
+  justify-content: center;
+  margin: 20px auto;
+  gap: 30px;
+  max-width: 900px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.left, .right {
+  width: 48%;
+}
+.user-list {
+  border: 1px solid #e0e0e0;
+  height: 280px;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: #fafafa;
+}
+.user-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+.user-item:hover {
+  background: #f0f4f8;
+}
+.role-item {
+  margin: 10px 0;
+  font-size: 15px;
+}
