@@ -1,0 +1,46 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+config.local.php
+secrets/
+
+# Documentation kept locally by request
+*.md
+docs/
+
+# User-provided uploads and generated runtime data
+uploads/*
+!uploads/.gitkeep
+logs/
+*.log
+*.tmp
+*.cache
+*.pid
+*.session
+
+# Database exports, backups, and local databases (keep schema.sql tracked)
+*.sql.bak
+*.sql.gz
+*.dump
+*.db
+*.sqlite
+*.sqlite3
+
+# Dependencies and generated build/test artifacts
+vendor/
+node_modules/
+coverage/
+build/
+dist/
+.phpunit.cache/
+
+# Local IDE and operating-system files
+.idea/
+.vscode/
+.vs/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
